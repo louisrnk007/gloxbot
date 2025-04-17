@@ -17,7 +17,8 @@ def repondre_glowcheek(question):
         "GlowCheek est régulièrement en rupture de stock en raison de la forte demande."
     )
 
-   from openai import OpenAI
+  from openai import OpenAI
+
 
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])  # sécurisé avec Streamlit secrets
 
