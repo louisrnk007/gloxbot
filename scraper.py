@@ -1,30 +1,28 @@
 import requests
 from bs4 import BeautifulSoup
+import json
+import os
 
-def scraper_page(url):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+URL = "https://glowcheek.fr/faq/"
 
-    # On récupère les titres et paragraphes
-    titres = soup.find_all(['h1', 'h2', 'h3'])
-    paragraphes = soup.find_all(['p', 'li'])
+def scrap_faq():
+    response = requests.get(URL)
+    soup = BeautifulSoup(response.content, "html.parser")
 
-    contenu = ""
-    for titre in titres:
-        contenu += f"\n## {titre.get_text(strip=True)}\n"
-    for p in paragraphes:
-        texte = p.get_text(strip=True)
-        if texte:
-            contenu += f"{texte}\n"
+    faq = []
+    questions = soup.find_all("h4")
+    answers = soup.find_all("div", class_="toggle-content")
 
-    return contenu
+    for q, a in zip(questions, answers):
+        faq.append({
+            "question": q.get_text(strip=True),
+            "answer": a.get_text(strip=True)
+        })
 
-# Exemple d'URL produit sur GlowCheek
-url = "https://glowcheek.fr/products/masque-face-form"
-contenu_scrape = scraper_page(url)
+    # Stocker le fichier dans data/
+    os.makedirs("data", exist_ok=True)
+    with open("data/faq.json", "w") as f:
+        json.dump(faq, f, indent=4, ensure_ascii=False)
 
-# On sauvegarde dans un fichier local
-with open("data/masque_face_form.txt", "w", encoding="utf-8") as f:
-    f.write(contenu_scrape)
-
-print("✅ Données extraites et enregistrées.")
+if __name__ == "__main__":
+    scrap_faq()
