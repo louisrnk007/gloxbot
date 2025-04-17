@@ -17,13 +17,20 @@ def repondre_glowcheek(question):
         "GlowCheek est régulièrement en rupture de stock en raison de la forte demande."
     )
 
-    completion = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": f"Tu es GlowBot, un assistant client qui ne répond que avec les informations ci-dessous : {contexte}"},
-            {"role": "user", "content": question}
-        ]
-    )
+   from openai import OpenAI
+
+client = OpenAI(api_key=st.secrets["openai"]["api_key"])  # sécurisé avec Streamlit secrets
+
+chat_completion = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "Tu es l'assistant de la boutique GlowCheek. Réponds aux clients en te basant uniquement sur les produits et infos du site."},
+        {"role": "user", "content": question}
+    ]
+)
+
+reponse = chat_completion.choices[0].message.content
+
     return completion.choices[0].message.content
 
 question = st.text_input("Votre question :", placeholder="Ex: Quels sont les bienfaits du masque GlowCheek ?")
