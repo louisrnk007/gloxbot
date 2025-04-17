@@ -1,6 +1,13 @@
 import streamlit as st
 import openai
 
+# app.py
+from scraper import scraper_glowcheek
+
+# Lancer le scraping automatiquement à chaque démarrage
+scraper_glowcheek()
+
+
 st.set_page_config(page_title="GlowBot", layout="centered")
 st.title("💬 GlowBot - Assistant GlowCheek")
 st.write("Posez-moi une question sur nos produits, la livraison ou nos offres !")
