@@ -1,28 +1,22 @@
 import requests
 from bs4 import BeautifulSoup
-import json
-import os
 
 URL = "https://glowcheek.fr/faq/"
 
-def scrap_faq():
+def scraper_glowcheek():
     response = requests.get(URL)
-    soup = BeautifulSoup(response.content, "html.parser")
+    soup = BeautifulSoup(response.text, "lxml")
 
-    faq = []
-    questions = soup.find_all("h4")
-    answers = soup.find_all("div", class_="toggle-content")
+    faq_sections = soup.select(".elementor-widget-container")  # à ajuster selon la page
+    contenu = ""
 
-    for q, a in zip(questions, answers):
-        faq.append({
-            "question": q.get_text(strip=True),
-            "answer": a.get_text(strip=True)
-        })
+    for section in faq_sections:
+        text = section.get_text(separator="\n").strip()
+        contenu += text + "\n\n"
 
-    # Stocker le fichier dans data/
-    os.makedirs("data", exist_ok=True)
-    with open("data/faq.json", "w") as f:
-        json.dump(faq, f, indent=4, ensure_ascii=False)
+    with open("data/glowcheek_data.txt", "w", encoding="utf-8") as f:
+        f.write(contenu)
 
 if __name__ == "__main__":
-    scrap_faq()
+    scraper_glowcheek()
+    print("✅ Données GlowCheek extraites avec succès.")
